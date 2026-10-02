@@ -35,5 +35,44 @@ def initialise_database():
     connection.commit()
     connection.close()
 
+def delete_row_from_db(db_name: str, id: int) -> None:
+    connection = get_connection()
+
+    connection.execute(
+        """
+        DELETE FROM ?
+        WHERE id = ?
+        """,
+        (db_name, id)
+    )
+    connection.commit()
+    connection.close()
+
+def rename_row_in_db(db_name: str, id: int, name: str) -> None:
+    connection = get_connection()
+    connection.execute(
+        """
+        UPDATE ?
+        SET name = ?
+        WHERE id = ?
+        """,
+        (db_name, name, id)
+    )
+    connection.commit()
+    connection.close()
+
+def get_row_from_db(db_name: str, id: int) -> sqlite3.Row:
+    connection = get_connection()
+    row = connection.execute(
+        """
+        SELECT id, name, quantity, unit, cupboard_id
+        FROM ?
+        WHERE id = ?
+        """,
+        (db_name, id)
+    ).fetchone()
+    connection.close()
+    return row
+
 if __name__ == "__main__":
     initialise_database()

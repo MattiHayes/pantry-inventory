@@ -1,4 +1,4 @@
-from database.cupboard import insert_cupboard, get_items_in_cupboard, get_cupboards
+from database.cupboard import insert_cupboard, get_items_in_cupboard, get_cupboards, rename_cupboard
 from database.item import get_item_with_name_in_cupboard, insert_item
 from item import Item
 
@@ -16,6 +16,31 @@ class Cupboard:
         self._name = name.lower()
         self._items: dict[str, Item] = {}
         self.load_items()
+
+
+    def __str__(self) -> str:
+        items = list(self._items.values())
+
+        if not items:
+            return self._name.capitalize() + ":"
+
+        item_lines = [
+            f"   ├── {item}"
+            for item in items[:-1]
+        ]
+
+        item_lines.append(f"   └── {items[-1]}")
+
+        return self._name.capitalize() + ":\n" + "\n".join(item_lines)
+
+    @property
+    def name(self) -> str:
+        return self._name
+
+    @name.setter
+    def name(self, new_name: str) -> None:
+        self._name = new_name.lower()
+        rename_cupboard(self._id, self._name)
 
     def load_items(self):
         rows = get_items_in_cupboard(self._id)
@@ -52,20 +77,6 @@ class Cupboard:
 
         self._items[name].add_quantity(item_quantity)
 
-    def __str__(self) -> str:
-        items = list(self._items.values())
-
-        if not items:
-            return self._name.capitalize() + ":"
-
-        item_lines = [
-            f"   ├── {item}"
-            for item in items[:-1]
-        ]
-
-        item_lines.append(f"   └── {items[-1]}")
-
-        return self._name.capitalize() + ":\n" + "\n".join(item_lines)
 
 
 

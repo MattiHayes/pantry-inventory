@@ -1,4 +1,4 @@
-from .utils import get_connection
+from .utils import get_connection, rename_row_in_db, get_row_from_db, delete_row_from_db
 import sqlite3
 
 def item_exists_in_cupboard(name: str, cupboard_id: int) -> bool:
@@ -37,20 +37,13 @@ def insert_item(name: str, quantity: float, unit: str, cupboard_id: int) -> int:
 
 
 def get_item(item_id: int) -> sqlite3.Row | None:
-    connection = get_connection()
+    return get_row_from_db("items", item_id)
 
-    row = connection.execute(
-        """
-        SELECT id, name, quantity, unit, cupboard_id
-        FROM items
-        WHERE id = ?
-        """,
-        (item_id,)
-    ).fetchone()
+def rename_item(item_id: int, name: str) -> None:
+    rename_row_in_db("items", item_id, name)
 
-    connection.close()
-
-    return row
+def remove_cupboard(item_id: int) -> None:
+    delete_row_from_db("items", item_id)
 
 def get_item_with_name_in_cupboard(item_name: str, cubboard_id: int) -> sqlite3.Row | None:
     connection = get_connection()
@@ -83,17 +76,15 @@ def update_item_quantity(item_id: int, quantity: float) -> None:
     connection.commit()
     connection.close()
 
-def rename_item(item_id: int, name: str) -> None:
+def change_item_unit(item_id: int, unit: str) -> None:
     connection = get_connection()
-
     connection.execute(
         """
         UPDATE items
-        SET name = ?
+        SET unit = ?
         WHERE id = ?
         """,
-        (name, item_id)
+        (unit, item_id)
     )
-
     connection.commit()
     connection.close()
