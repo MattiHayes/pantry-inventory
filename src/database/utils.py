@@ -65,7 +65,7 @@ def get_row_from_db(db_name: str, id: int) -> sqlite3.Row:
     connection = get_connection()
     row = connection.execute(
         f"""
-        SELECT id, name, quantity, unit, cupboard_id
+        SELECT *
         FROM {db_name}
         WHERE id = ?
         """,
