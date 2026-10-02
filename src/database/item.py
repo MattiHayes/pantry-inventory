@@ -5,16 +5,15 @@ from .utils import delete_row_from_db, get_connection, get_row_from_db, rename_r
 
 def item_exists_in_cupboard(name: str, cupboard_id: int) -> bool:
     with get_connection() as connection:
-        cursor = connection.execute(
+        row = connection.execute(
             """
             SELECT 1
             FROM items
             WHERE name = ? AND cupboard_id = ?
             """,
             (name, cupboard_id)
-        )
-    exists = cursor.fetchone() is not None
-    return exists
+        ).fetchone()
+    return row is not None
 
 
 def insert_item(name: str, quantity: float, unit: str, cupboard_id: int) -> int:
