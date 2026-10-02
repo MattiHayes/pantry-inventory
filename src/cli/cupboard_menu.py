@@ -5,12 +5,32 @@ from database.cupboard import (
 )
 
 
+def prompt_for_quantity(prompt: str) -> float | None:
+    """Read a non-negative numeric quantity, or return None for invalid input."""
+    raw_value = input(prompt).strip()
+
+    try:
+        quantity = float(raw_value)
+    except ValueError:
+        print("Please enter a number, such as 2 or 0.5.")
+        return None
+
+    if quantity < 0:
+        print("Quantity cannot be negative.")
+        return None
+
+    return quantity
+
+
 def list_items(cupboard) -> None:
     print(cupboard)
 
 def add_item(cupboard) -> None:
     item_name = input("Input Item name: > ").lower()
-    quantity = input(f"Input the quantity of the {item_name}: > ")
+    quantity = prompt_for_quantity(f"Input the quantity of the {item_name}: > ")
+    if quantity is None:
+        return
+
     unit = input(f"Input the unit for {item_name}: > ")
 
     try:
@@ -21,13 +41,23 @@ def add_item(cupboard) -> None:
 
 def change_item_quantity(cupboard) -> None:
     item_name = input("Input Item name: > ").lower()
-    new_quantity = input(f"Input new quantity of {item_name}: > ")
-    cupboard[item_name].quantity = new_quantity
+    try:
+        item = cupboard[item_name]
+    except KeyError:
+        print(f"There is no {item_name} in this cupboard.")
+        return
+
+    new_quantity = prompt_for_quantity(f"Input new quantity of {item_name}: > ")
+    if new_quantity is not None:
+        item.quantity = new_quantity
 
 def change_item_unit(cupboard) -> None:
     item_name = input("Input Item name: > ").lower()
     new_unit = input(f"Input new unit for {item_name}: > ")
-    cupboard[item_name].unit = new_unit
+    try:
+        cupboard[item_name].unit = new_unit
+    except KeyError:
+        print(f"There is no {item_name} in this cupboard.")
 
 def remove_item(cupboard) -> None:
     item_name = input("Input Item name: > ").lower()
