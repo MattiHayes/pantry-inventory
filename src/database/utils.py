@@ -39,11 +39,11 @@ def delete_row_from_db(db_name: str, id: int) -> None:
     connection = get_connection()
 
     connection.execute(
-        """
-        DELETE FROM ?
+        f"""
+        DELETE FROM {db_name}
         WHERE id = ?
         """,
-        (db_name, id)
+        (id,)
     )
     connection.commit()
     connection.close()
@@ -51,12 +51,12 @@ def delete_row_from_db(db_name: str, id: int) -> None:
 def rename_row_in_db(db_name: str, id: int, name: str) -> None:
     connection = get_connection()
     connection.execute(
-        """
-        UPDATE ?
+        f"""
+        UPDATE {db_name}
         SET name = ?
         WHERE id = ?
         """,
-        (db_name, name, id)
+        (name, id)
     )
     connection.commit()
     connection.close()
@@ -64,12 +64,12 @@ def rename_row_in_db(db_name: str, id: int, name: str) -> None:
 def get_row_from_db(db_name: str, id: int) -> sqlite3.Row:
     connection = get_connection()
     row = connection.execute(
-        """
+        f"""
         SELECT id, name, quantity, unit, cupboard_id
-        FROM ?
+        FROM {db_name}
         WHERE id = ?
         """,
-        (db_name, id)
+        (id,)
     ).fetchone()
     connection.close()
     return row

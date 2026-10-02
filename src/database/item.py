@@ -90,3 +90,15 @@ def change_item_unit(item_id: int, unit: str) -> None:
     )
     connection.commit()
     connection.close()
+
+def remove_items_in_cupboard(cupboard_id: int) -> None:
+    connection = get_connection()
+    connection.execute(
+            """
+            DELETE FROM items
+            WHERE cupboard_id = ?
+            """,
+            (cupboard_id,)
+        )
+    connection.commit()
+    connection.close()

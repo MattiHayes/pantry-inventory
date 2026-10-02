@@ -1,5 +1,6 @@
 import sqlite3
 
+from .item import remove_items_in_cupboard
 from .utils import delete_row_from_db, get_connection, get_row_from_db, rename_row_in_db
 
 
@@ -43,7 +44,8 @@ def rename_cupboard(cupboard_id: int, name: str) -> None:
 
 def remove_cupboard(cupboard_id: int) -> None:
     delete_row_from_db("cupboards", cupboard_id)
-
+    remove_items_in_cupboard(cupboard_id)
+    
 def get_items_in_cupboard(cupboard_id: int) -> list[sqlite3.Row]:
     connection = get_connection()
     rows = connection.execute(

@@ -1,5 +1,6 @@
 from cupboard import Cupboard
 
+
 class Pantry:
 
     def __init__(self) -> None:

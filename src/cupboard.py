@@ -1,6 +1,10 @@
-from database.cupboard import insert_cupboard, get_items_in_cupboard, get_cupboards, rename_cupboard
-from database.item import get_item_with_name_in_cupboard, insert_item
+from database.cupboard import get_cupboards, get_items_in_cupboard, rename_cupboard
+from database.item import insert_item, remove_item
 from item import Item
+
+
+class UnitMismatchError(Exception):
+    pass
 
 class Cupboard:
 
@@ -33,6 +37,14 @@ class Cupboard:
 
         return self._name.capitalize() + ":\n" + "\n".join(item_lines)
 
+    def __getitem__(self, name: str) -> Item:
+        return self._items[name]
+
+    def __delitem__(self, item_name: str) -> None:
+        # remove from database and then from python memory
+        remove_item(self._items[item_name].id)
+        del self._items[item_name]
+
     @property
     def name(self) -> str:
         return self._name
@@ -41,6 +53,10 @@ class Cupboard:
     def name(self, new_name: str) -> None:
         self._name = new_name.lower()
         rename_cupboard(self._id, self._name)
+
+    @property
+    def id(self) -> int:
+        return self._id
 
     def load_items(self):
         rows = get_items_in_cupboard(self._id)
@@ -68,16 +84,30 @@ class Cupboard:
             self, 
             item_name: str,
             item_quantity: float,
+            item_unit: str = ""
             ) -> None:
 
         name = item_name.lower()
 
         if name not in self._items:
-            raise ValueError(f"Item {name.capitalize} not in the {self._name.capitalize()}")
+            self.new_item(name, item_quantity, item_unit)
+            return
+
+        item = self._items[item_name]
+
+        if item_unit != item.unit:
+            raise UnitMismatchError(
+                f"{name} is already stored in {item.unit}, not {item_unit}."
+            )
 
         self._items[name].add_quantity(item_quantity)
 
+    def rename_item(self, item_name: str, new_name: str) -> None:
+        self._items[item_name].name = new_name
+        self._items[new_name] = self._items.pop(item_name) 
 
+    def pop(self, item_name: str) -> Item:
+        return self._items.pop(item_name)
 
 
 if __name__ == "__main__":
