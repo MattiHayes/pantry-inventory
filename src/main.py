@@ -1,9 +1,8 @@
-from cupboard import Cupboard
+from cli.main_menu import main_menu
 
-fridge = Cupboard("Fridge")
 
-fridge.new_item("butter", 250, "g")
-fridge.add_item("Butter", 250)
-fridge.new_item("Onions", 3, 'onions')
+def main():
+    main_menu()
 
-print(fridge)
+if __name__ == "__main__":
+    main()
