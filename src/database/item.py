@@ -1,5 +1,7 @@
-from .utils import get_connection, rename_row_in_db, get_row_from_db, delete_row_from_db
 import sqlite3
+
+from .utils import delete_row_from_db, get_connection, get_row_from_db, rename_row_in_db
+
 
 def item_exists_in_cupboard(name: str, cupboard_id: int) -> bool:
     connection = get_connection()
@@ -42,7 +44,7 @@ def get_item(item_id: int) -> sqlite3.Row | None:
 def rename_item(item_id: int, name: str) -> None:
     rename_row_in_db("items", item_id, name)
 
-def remove_cupboard(item_id: int) -> None:
+def remove_item(item_id: int) -> None:
     delete_row_from_db("items", item_id)
 
 def get_item_with_name_in_cupboard(item_name: str, cubboard_id: int) -> sqlite3.Row | None:

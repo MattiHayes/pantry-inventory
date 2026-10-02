@@ -1,5 +1,7 @@
-from .utils import get_connection, rename_row_in_db, get_row_from_db, delete_row_from_db
 import sqlite3
+
+from .utils import delete_row_from_db, get_connection, get_row_from_db, rename_row_in_db
+
 
 def cupboard_exists(name: str) -> bool:
     connection = get_connection()
