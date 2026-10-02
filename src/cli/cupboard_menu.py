@@ -71,7 +71,6 @@ def rename_item(cupboard) -> None:
 def change_cupboard_name(cupboard):
     new_name = input(f"Input the new name for {cupboard.name}: > ").lower()
     cupboard.name = new_name
-    rename_cupboard(cupboard.id, new_name)
 
 def delete_cupboard(cupboard) -> bool:
     remove_cupboard(cupboard.id)
