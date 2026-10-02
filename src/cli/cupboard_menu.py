@@ -27,7 +27,7 @@ def change_item_quantity(cupboard) -> None:
 def change_item_unit(cupboard) -> None:
     item_name = input("Input Item name: > ").lower()
     new_unit = input(f"Input new unit for {item_name}: > ")
-    cupboard[item_name].quantity = new_unit
+    cupboard[item_name].unit = new_unit
 
 def remove_item(cupboard) -> None:
     item_name = input("Input Item name: > ").lower()
