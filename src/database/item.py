@@ -4,39 +4,31 @@ from .utils import delete_row_from_db, get_connection, get_row_from_db, rename_r
 
 
 def item_exists_in_cupboard(name: str, cupboard_id: int) -> bool:
-    connection = get_connection()
-
-    cursor = connection.execute(
-        """
-        SELECT 1
-        FROM items
-        WHERE name = ? AND cupboard_id = ?
-        """,
-        (name, cupboard_id)
-    )
-
+    with get_connection() as connection:
+        cursor = connection.execute(
+            """
+            SELECT 1
+            FROM items
+            WHERE name = ? AND cupboard_id = ?
+            """,
+            (name, cupboard_id)
+        )
     exists = cursor.fetchone() is not None
-
-    connection.close()
-
     return exists
 
 
 def insert_item(name: str, quantity: float, unit: str, cupboard_id: int) -> int:
-    connection = get_connection()
-
-    cursor = connection.execute(
-        """
-            INSERT INTO items (name, quantity, unit, cupboard_id)
-            VALUES (?, ?, ?, ?)
-        """,
-        (name, quantity, unit, cupboard_id)
-    )
-    connection.commit()
+    with get_connection() as connection:
+        cursor = connection.execute(
+            """
+                INSERT INTO items (name, quantity, unit, cupboard_id)
+                VALUES (?, ?, ?, ?)
+            """,
+            (name, quantity, unit, cupboard_id)
+        )
+        connection.commit()
     id = cursor.lastrowid
-    connection.close()
     return id
-
 
 def get_item(item_id: int) -> sqlite3.Row | None:
     return get_row_from_db("items", item_id)
@@ -48,57 +40,38 @@ def remove_item(item_id: int) -> None:
     delete_row_from_db("items", item_id)
 
 def get_item_with_name_in_cupboard(item_name: str, cubboard_id: int) -> sqlite3.Row | None:
-    connection = get_connection()
-
-    row = connection.execute(
-        """
-        SELECT id, name, quantity, unit, cupboard_id
-        FROM items
-        WHERE name = ? AND cupboard_id = ?
-        """,
-        (item_name, cubboard_id)
-    ).fetchone()
-
-    connection.close()
-
+    with get_connection() as connection:
+        row = connection.execute(
+            """
+            SELECT id, name, quantity, unit, cupboard_id
+            FROM items
+            WHERE name = ? AND cupboard_id = ?
+            """,
+            (item_name, cubboard_id)
+        ).fetchone()
     return row
 
 def update_item_quantity(item_id: int, quantity: float) -> None:
-    connection = get_connection()
+    with get_connection() as connection:
+        connection.execute(
+            """
+            UPDATE items
+            SET quantity = ?
+            WHERE id = ?
+            """,
+            (quantity, item_id)
+        )
 
-    connection.execute(
-        """
-        UPDATE items
-        SET quantity = ?
-        WHERE id = ?
-        """,
-        (quantity, item_id)
-    )
-
-    connection.commit()
-    connection.close()
+        connection.commit()
 
 def change_item_unit(item_id: int, unit: str) -> None:
-    connection = get_connection()
-    connection.execute(
-        """
-        UPDATE items
-        SET unit = ?
-        WHERE id = ?
-        """,
-        (unit, item_id)
-    )
-    connection.commit()
-    connection.close()
-
-def remove_items_in_cupboard(cupboard_id: int) -> None:
-    connection = get_connection()
-    connection.execute(
+    with get_connection() as connection:
+        connection.execute(
             """
-            DELETE FROM items
-            WHERE cupboard_id = ?
+            UPDATE items
+            SET unit = ?
+            WHERE id = ?
             """,
-            (cupboard_id,)
+            (unit, item_id)
         )
-    connection.commit()
-    connection.close()
+        connection.commit()
