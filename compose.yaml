@@ -1,0 +1,18 @@
+services:
+  pantry:
+    build: .
+    container_name: pantry-inventory
+    restart: unless-stopped
+    ports:
+      - "${PANTRY_PORT:-5000}:5000"
+    environment:
+      PANTRY_SECRET_KEY: ${PANTRY_SECRET_KEY:?Set PANTRY_SECRET_KEY in .env; see README.md}
+    volumes:
+      - pantry_data:/data
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+
+volumes:
+  pantry_data:

@@ -8,6 +8,7 @@ venv/
 config.*
 .env
 .env.*
+!.env.example
 
 # Database / local data
 *.db
