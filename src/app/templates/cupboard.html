@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f5f4ef">
+    <title>{{ cupboard['name']|title }} — Pantry</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="{{ url_for('static', filename='theme.js') }}" defer></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Main navigation">
+        <a class="brand" href="{{ url_for('index') }}" aria-label="Pantry home">
+          <span class="brand-mark" aria-hidden="true">p</span>
+          <span>pantry<span class="brand-period">.</span></span>
+        </a>
+        <div class="sidebar-label">YOUR SPACE</div>
+        <a class="nav-link nav-link-active" href="{{ url_for('index') }}">
+          <span class="nav-icon" aria-hidden="true">▦</span><span>Cupboards</span>
+        </a>
+        <div class="sidebar-bottom">
+          <div class="sidebar-note-icon" aria-hidden="true">✳</div>
+          <p>A little more organised, one shelf at a time.</p>
+          <span>YOUR HOME PANTRY</span>
+        </div>
+      </aside>
+
+      <main class="main-content">
+        <header class="topbar">
+          <div class="breadcrumb"><a href="{{ url_for('index') }}">My pantry</a><span class="crumb-slash">/</span><strong>{{ cupboard['name']|title }}</strong></div>
+          <button class="appearance-button" id="appearance-toggle" type="button" aria-expanded="false" aria-controls="appearance-panel"><span aria-hidden="true">◐</span> Appearance</button>
+        </header>
+
+        <section class="page-intro detail-intro" aria-labelledby="page-title">
+          <a class="back-link" href="{{ url_for('index') }}">← All cupboards</a>
+          <div class="eyebrow"><span class="eyebrow-dot"></span> YOUR CUPBOARD</div>
+          <h1 id="page-title">{{ cupboard['name']|title }}<span>.</span></h1>
+          <p class="intro-copy">Keep track of what’s here and what you’re running low on.</p>
+          <div class="intro-meta"><span class="meta-icon" aria-hidden="true">▦</span> {{ items|length }} item{{ '' if items|length == 1 else 's' }}</div>
+        </section>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+          <div class="flash-stack" role="status" aria-live="polite">
+            {% for category, message in messages %}<div class="flash-message flash-{{ category }}">{{ message }}</div>{% endfor %}
+          </div>
+          {% endif %}
+        {% endwith %}
+
+        <section class="cupboard-section item-section" aria-labelledby="items-heading">
+          <div class="section-heading">
+            <div><h2 id="items-heading">What’s inside</h2><p>Update quantities as you use things.</p></div>
+            <span class="section-count">{{ '%02d'|format(items|length) }}</span>
+          </div>
+
+          {% if items %}
+          <div class="item-list">
+            {% for item in items %}
+            <article class="item-row">
+              <div class="item-identity">
+                <span class="item-bullet" aria-hidden="true">✳</span>
+                <div><h3>{{ item['name']|title }}</h3><span class="item-unit-label">{{ item['unit'] or 'No unit' }}</span></div>
+              </div>
+              <form class="inline-edit quantity-edit" action="{{ url_for('set_item_quantity', cupboard_id=cupboard['id'], item_id=item['id']) }}" method="post">
+                <label class="sr-only" for="quantity-{{ item['id'] }}">Quantity for {{ item['name'] }}</label>
+                <input id="quantity-{{ item['id'] }}" name="quantity" type="number" min="0" step="any" value="{{ item['quantity'] }}" required>
+                <button type="submit">Save</button>
+              </form>
+              <form class="inline-edit unit-edit" action="{{ url_for('set_item_unit', cupboard_id=cupboard['id'], item_id=item['id']) }}" method="post">
+                <label class="sr-only" for="unit-{{ item['id'] }}">Unit for {{ item['name'] }}</label>
+                <input id="unit-{{ item['id'] }}" name="unit" maxlength="20" value="{{ item['unit'] }}" placeholder="unit">
+                <button type="submit" aria-label="Save unit for {{ item['name'] }}">↵</button>
+              </form>
+              <form class="delete-item-form" action="{{ url_for('delete_item', cupboard_id=cupboard['id'], item_id=item['id']) }}" method="post" onsubmit="return confirm('Remove this item from the cupboard?')">
+                <button class="delete-button" type="submit" aria-label="Remove {{ item['name'] }}">×</button>
+              </form>
+            </article>
+            {% endfor %}
+          </div>
+          {% else %}
+          <div class="empty-state items-empty">
+            <div class="empty-illustration" aria-hidden="true"><span>＋</span><i>✳</i></div>
+            <h3>This cupboard is waiting for its first item.</h3>
+            <p>Add what’s already on the shelf to get started.</p>
+          </div>
+          {% endif %}
+        </section>
+
+        <section class="add-item-card" aria-labelledby="add-item-heading">
+          <div class="add-item-heading"><span class="add-item-icon" aria-hidden="true">＋</span><div><h2 id="add-item-heading">Add something</h2><p>Already have this item? Its quantity will be added.</p></div></div>
+          <form class="add-item-form" action="{{ url_for('create_item', cupboard_id=cupboard['id']) }}" method="post">
+            <label>Item name<input name="name" maxlength="100" placeholder="e.g. chickpeas" required></label>
+            <label>Quantity<input name="quantity" type="number" min="0" step="any" placeholder="e.g. 2" required></label>
+            <label>Unit <span class="optional-label">optional</span><input name="unit" maxlength="20" placeholder="e.g. tins"></label>
+            <button type="submit" class="primary-button">Add to cupboard <span aria-hidden="true">→</span></button>
+          </form>
+        </section>
+
+        <footer class="page-footer"><span>MADE FOR A CALMER KITCHEN</span><span>TAKE STOCK, FEEL GOOD <b>✳</b></span></footer>
+      </main>
+    </div>
+
+    <section class="appearance-panel" id="appearance-panel" aria-label="Colour settings" hidden>
+      <div class="panel-heading"><div><span class="panel-kicker">MAKE IT YOURS</span><h2>Pick your palette</h2></div><button class="panel-close" id="appearance-close" type="button" aria-label="Close colour settings">×</button></div>
+      <p class="panel-description">Play with the colours. Your choices stay on this device.</p>
+      <label class="colour-control"><span><i class="colour-swatch swatch-accent"></i>Accent</span><input type="color" data-theme-color="accent" value="#52705d" aria-label="Accent colour"></label>
+      <label class="colour-control"><span><i class="colour-swatch swatch-background"></i>Background</span><input type="color" data-theme-color="background" value="#f5f4ef" aria-label="Background colour"></label>
+      <label class="colour-control"><span><i class="colour-swatch swatch-card"></i>Cards</span><input type="color" data-theme-color="card" value="#ffffff" aria-label="Card colour"></label>
+      <button class="reset-button" id="theme-reset" type="button">Reset to the original palette</button>
+    </section>
+  </body>
+</html>

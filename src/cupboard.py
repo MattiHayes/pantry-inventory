@@ -76,7 +76,7 @@ class Cupboard:
             item_unit : str  = ""
             ) -> None:
 
-        name = item_name.lower()
+        name = item_name.strip().lower()
 
         if name in self._items:
             raise ValueError(f"Item {item_name} already in the {self._name.capitalize()}")
