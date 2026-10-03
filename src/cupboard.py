@@ -92,24 +92,23 @@ class Cupboard:
             item_unit: str = ""
             ) -> None:
 
-        name = item_name.lower()
+        name = item_name.strip().lower()
 
         if name not in self._items:
             self.new_item(name, item_quantity, item_unit)
             return
-
-        item = self._items[item_name]
-
+        
+        item = self._items[name]
         if item_unit != item.unit:
             raise UnitMismatchError(
                 f"{name} is already stored in {item.unit}, not {item_unit}."
             )
-
-        self._items[name].add_quantity(item_quantity)
+        item.add_quantity(item_quantity)
 
     def rename_item(self, item_name: str, new_name: str) -> None:
-        self._items[item_name].name = new_name
-        self._items[new_name] = self._items.pop(item_name) 
+        name = new_name.strip().lower()
+        self._items[item_name].name = name
+        self._items[name] = self._items.pop(item_name) 
 
     def pop(self, item_name: str) -> Item:
         return self._items.pop(item_name)

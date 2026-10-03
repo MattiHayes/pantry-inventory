@@ -5,7 +5,7 @@ from contextlib import contextmanager
 DATABASE = "pantry.db"
 
 @contextmanager
-def get_connection() -> Generator[sqlite3.Connection]:
+def get_connection() -> Generator[sqlite3.Connection, None, None]:
     connection = sqlite3.connect(DATABASE)
     connection.row_factory = sqlite3.Row
     connection.execute("PRAGMA foreign_keys = ON")

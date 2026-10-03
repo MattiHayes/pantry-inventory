@@ -35,7 +35,7 @@ class Item:
 
     @name.setter
     def name(self, new_name: str) -> None:
-        name = new_name.lower()
+        name = new_name.strip().lower()
         rename_item(self._id, name)
         self._name = name
         
