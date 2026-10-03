@@ -1,6 +1,5 @@
 import sqlite3
 
-from .item import remove_items_in_cupboard
 from .utils import delete_row_from_db, get_connection, get_row_from_db, rename_row_in_db
 
 

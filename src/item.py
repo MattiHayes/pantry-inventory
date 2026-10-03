@@ -34,9 +34,11 @@ class Item:
         return self._name
 
     @name.setter
-    def name(self, name: str) -> None:
-        self._name = name.lower()
-        rename_item(self._id, self._name)
+    def name(self, new_name: str) -> None:
+        name = new_name.lower()
+        rename_item(self._id, name)
+        self._name = name
+        
 
     @property
     def unit(self) -> str:
@@ -44,8 +46,9 @@ class Item:
 
     @unit.setter
     def unit(self, new_unit: str):
+        change_item_unit(self._id, new_unit)
         self._unit = new_unit
-        change_item_unit(self._id, self._unit)
+        
 
     @property
     def quantity(self) -> float:
@@ -54,9 +57,10 @@ class Item:
     @quantity.setter
     def quantity(self, new_value: float) -> None:
         if new_value < 0:
-            raise ValueError(f"Must have a positive quantity of {self._name}")
+            raise ValueError(f"Can not have a negative quantity of {self._name}")
+        update_item_quantity(self._id, new_value)
         self._quantity = new_value
-        update_item_quantity(self._id, self._quantity)
+        
 
     @property
     def id(self) -> int:

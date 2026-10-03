@@ -51,12 +51,17 @@ class Cupboard:
 
     @name.setter
     def name(self, new_name: str) -> None:
-        self._name = new_name.lower()
-        rename_cupboard(self._id, self._name)
+        name = new_name.lower()
+        rename_cupboard(self._id, name)
+        self._name = name
 
     @property
     def id(self) -> int:
         return self._id
+
+    @id.setter
+    def id(self, new_val) -> None:
+        print("Can not change cupboard id.")
 
     def load_items(self):
         rows = get_items_in_cupboard(self._id)

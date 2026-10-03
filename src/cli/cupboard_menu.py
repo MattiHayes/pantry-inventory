@@ -1,8 +1,5 @@
 from cupboard import Cupboard, UnitMismatchError
-from database.cupboard import (
-    remove_cupboard,
-    rename_cupboard,
-)
+from database.cupboard import remove_cupboard
 
 
 def prompt_for_quantity(prompt: str) -> float | None:

@@ -1,6 +1,6 @@
 import sqlite3
-from contextlib import contextmanager
 from collections.abc import Generator
+from contextlib import contextmanager
 
 DATABASE = "pantry.db"
 
